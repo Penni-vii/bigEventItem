@@ -33,6 +33,7 @@
 
 
     <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="./js/utils/user.js"></script>
     <script>
       $('#logIn').click(function () {
         // 先获取到用户输入的姓名和密码
@@ -42,24 +43,17 @@
         // 判断用户输入的是否为空
         if (myName === '' || myPassword === '') {
           alert('不能为空！！！');
+          return;
         }
 
-        // 发送ajax请求
-        $.post(
-          'http://localhost:8000/admin/login', 
-          {
-            user_name:myName,
-            password:myPassword
-          },
-          function (res) {
-            console.log(res);
-            if (res.code === 200) {
-              alert("登录成功");
-            } else {
-              alert(res.msg);
-            }
+        // 发送管理员用户登录的ajax请求
+        user.login(myName,myPassword,function(res) {
+          if (res.code === 200) {
+            location.href="./index.html";
+          } else {
+            alert(res.msg);
           }
-        );
+        });
 
       });
     
