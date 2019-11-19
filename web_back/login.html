@@ -25,7 +25,7 @@
                 <i class="iconfont icon-key"></i>
                 <input id="myName" type="text" class="input_txt" placeholder="邮箱/手机号">
                 <input id="myPassword" type="password" class="input_pass" placeholder="密码">
-                <input id="logIn" type="submit" class="input_sub" value="登 录">
+                <input id="logIn" type="button" class="input_sub" value="登 录">
             </form>
         </div>
 
@@ -41,8 +41,25 @@
 
         // 判断用户输入的是否为空
         if (myName === '' || myPassword === '') {
-          
+          alert('不能为空！！！');
         }
+
+        // 发送ajax请求
+        $.post(
+          'http://localhost:8000/admin/login', 
+          {
+            user_name:myName,
+            password:myPassword
+          },
+          function (res) {
+            console.log(res);
+            if (res.code === 200) {
+              alert("登录成功");
+            } else {
+              alert(res.msg);
+            }
+          }
+        );
 
       });
     
