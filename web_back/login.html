@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/iconfont.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" href="./js/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -30,9 +31,29 @@
         </div>
 
     </div> 
+    
+    <!-- 模态框 最好直接放在body子元素的同级位置-->
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">系统提示</h4>
+          </div>
+          <div class="modal-body">
+            <p id="hehe">不能为空</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 
     <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="./js/utils/user.js"></script>
     <script>
       $('#logIn').click(function () {
@@ -42,7 +63,9 @@
 
         // 判断用户输入的是否为空
         if (myName === '' || myPassword === '') {
-          alert('不能为空！！！');
+          // alert('不能为空！！！');
+          $('#hehe').text('不能为空');
+          $('#myModal').modal('show');
           return;
         }
 
@@ -51,7 +74,8 @@
           if (res.code === 200) {
             location.href="./index.html";
           } else {
-            alert(res.msg);
+            $('#hehe').text(res.msg);
+            $('#myModal').modal('show');
           }
         });
 
