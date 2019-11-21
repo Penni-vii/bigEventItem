@@ -28,8 +28,8 @@
                         <th class="text-center" width="100">操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody id="xixi">
+                    <!-- <tr>
                         <td>未分类</td>
                         <td>uncategorized</td>
                         <td class="text-center">
@@ -37,37 +37,7 @@
                                 class="btn btn-info btn-xs">编辑</a>
                             <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
                         </td>
-                    </tr>
-
-                    <tr>
-                        <td>奇趣事</td>
-                        <td>funny</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>会生活</td>
-                        <td>living</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;3&quot;,&quot;slug&quot;:&quot;living&quot;,&quot;name&quot;:&quot;会生活&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 3 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>爱旅行</td>
-                        <td>travel</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;4&quot;,&quot;slug&quot;:&quot;travel&quot;,&quot;name&quot;:&quot;爱旅行&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 4 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
                 <tfoot>
                     <tr>
@@ -129,6 +99,39 @@
                 $('#addModal').modal('show');
               }
           })      
+      </script>
+
+      <script src="./js/utils/config.js"></script>
+      <script src="./js/utils/category.js"></script>
+      <script src="./js/art-template.js"></script>
+      <!-- 定义template模板 -->
+      <script type="text/html" id="temp">
+        {{each data item}}
+        <tr>
+            <td>{{item.name}}</td>
+            <td>{{item.slug}}</td>
+            <td class="text-center">
+                <a href="javascript:editTr({&quot;id&quot;:&quot;1&quot;,&quot;slug&quot;:&quot;uncategorized&quot;,&quot;name&quot;:&quot;未分类&quot;});"
+                    class="btn btn-info btn-xs">编辑</a>
+                <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+      </script>
+      <script>
+        // 页面一上来，先把服务器中的数据动态渲染好。
+        category.show(function (res) {
+          console.log(res);
+          if (res.code === 200) {
+            // 拿到数据后渲染到tbody标签里面，这里用模板引擎实现。
+            // 使用模板引擎的步骤：①下载模板引擎的资源并引入。 ②定义模板 ③调用函数
+            // 公式： 字符串=template('模板id'，数据)
+            var htmlStr = template('temp', res);
+            $('#xixi').html(htmlStr);
+          }
+        });
+      
+      
       </script>
 
 </body>
