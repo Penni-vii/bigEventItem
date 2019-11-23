@@ -29,15 +29,6 @@
                     </tr>
                 </thead>
                 <tbody id="xixi">
-                    <!-- <tr>
-                        <td>未分类</td>
-                        <td>uncategorized</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;1&quot;,&quot;slug&quot;:&quot;uncategorized&quot;,&quot;name&quot;:&quot;未分类&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr> -->
                 </tbody>
                 <tfoot>
                     <tr>
@@ -62,11 +53,11 @@
               <form>
                 <div class="form-group">
                   <label for="recipient-name" class="control-label">分类名称:</label>
-                  <input type="text" class="form-control" id="cate-name">
+                  <input type="text" class="form-control" id="add-name">
                 </div>
                 <div class="form-group">
                   <label for="message-text" class="control-label">分类别名:</label>
-                  <input type="text" class="form-control" id="cate-slug">
+                  <input type="text" class="form-control" id="add-slug">
                 </div>
               </form>
             </div>
@@ -84,11 +75,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-              <h4 class="modal-title">新增分类</h4>
+              <h4 class="modal-title">编辑分类</h4>
             </div>
             <div class="modal-body">
               <form>
-                <div  class="form-group">
+                <div style="display:none;" class="form-group">
                   <label for="recipient-name" class="control-label">分类ID</label>
                   <input type="text" class="form-control" id="edit-id">
                 </div>
@@ -103,8 +94,8 @@
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
-              <button type="button" class="btn btn-primary" id="model_add">新增</button>
+              <button type="button" class="btn btn-default" id="model_close">关闭</button>
+              <button type="button" class="btn btn-primary" id="model_save">保存</button>
             </div>
           </div>
         </div>
@@ -126,12 +117,12 @@
           //   $('#addModal').modal('hide');
           // });
 
-          $('.category_table').delegate('a','click',function(){
-              if($(this).hasClass('btn-info')){
-                $('#addModal .modal-title').html('修改分类名称');
-                $('#addModal').modal('show');
-              }
-          })      
+          // $('.category_table').delegate('a','click',function(){
+          //     if($(this).hasClass('btn-info')){
+          //       $('#addModal .modal-title').html('修改分类名称');
+          //       $('#addModal').modal('show');
+          //     }
+          // })      
       </script>
 
       <script src="./js/utils/config.js"></script>
@@ -152,12 +143,13 @@
         {{/each}}
       </script>
       <script>
-        // 页面一上来，先把服务器中的数据动态渲染好。
+        // 页面一上来，调用getAndShow()方法，先把服务器中的数据动态渲染好。
         getAndShow();
 
+        // 将（获取服务器端的数据，并将数据渲染到页面上） 封装成一个方法getAndShow()
         function getAndShow () {
           category.show(function (res) {
-            console.log(res);
+            // console.log(res);
             if (res.code === 200) {
               // 拿到数据后渲染到tbody标签里面，这里用模板引擎实现。
               // 使用模板引擎的步骤：①下载模板引擎的资源并引入。 ②定义模板 ③调用函数
@@ -184,28 +176,78 @@
           });
         });
       
+
         // 编辑功能
         $('#xixi').on('click', '#edit', function () {
           var id = $(this).attr('data-id');
           var name = $(this).attr('data-name');
           var slug = $(this).attr('data-slug');
-          console.log(name, slug);
+          // console.log(name, slug);
           //点击编辑按钮的时候要显示出模态框
           $('#editModal').modal('show');
-          $('#model_shutoff').click(function(){
-            // alert('shutoff');
-            $('#editModal').modal('hide');
-          });
-          $('#model_add').click(function(){
-            alert('add');
-            $('#addModal').modal('hide');
-          });
           // 让模态框内展示出名字和类别
           $('#edit-id').val(id);
           $('#edit-name').val(name);
           $('#edit-slug').val(slug);
-
         });
+
+        // 编辑功能-->关闭按钮的功能
+        $('#model_close').click(function(){
+          $('#editModal').modal('hide');
+        });
+
+        // 编辑功能-->保存按钮的功能
+        $('#model_save').click(function(){
+          // 按下保存按钮的时候，先获取到用户输入的内容
+          var id = $('#edit-id').val().trim();
+          var name = $('#edit-name').val().trim();
+          var slug = $('#edit-slug').val().trim();
+          // 简单的判空一下用户输入的内容
+          if (name === '' || slug === '') {
+            alert('输入的内容不能为空哦！');
+            return;
+          };
+          // 调用接口，发送请求
+          category.edit(id,name,slug,function (res) {
+            // console.log(res);
+            if (res.code === 200) {
+              $('#editModal').modal('hide');
+              getAndShow();
+            }
+          })
+        });
+      
+        
+        // 新增功能-->新增按钮的功能
+        $('#model_add').click(function () {
+          // 获取用户输入的文章名和文章别名
+          var name = $('#add-name').val().trim();
+          var slug = $('#add-slug').val().trim();
+          // 对用户输入的内容进行简单的判空
+          if (name === '' || slug === '') {
+            alert('不能输入空哦！！！');
+            return;
+          };
+          // 发送请求
+          category.add(name,slug,function (res) {
+            if (res.code === 200) {
+              $('#add-name').val('');
+              $('#add-slug').val('');
+              $('#addModal').modal('hide');
+              getAndShow();
+            }
+          });
+        });
+
+        // 新增功能-->关闭按钮的功能
+        $('#model_shutoff').click(function () {
+          $('#add-name').val('');
+          $('#add-slug').val('');
+          $('#addModal').modal('hide');
+        });
+      
+      
+      
       </script>
 
 </body>

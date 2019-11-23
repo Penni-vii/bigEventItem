@@ -13,6 +13,11 @@ var category = {
     $.post(APIURLS.category_edit,{id:id,name:name,slug:slug},function (res) {
       callback(res);
     })
+  },
+  add: function (name,slug,callback) {
+    $.post(APIURLS.category_add,{name:name,slug:slug},function (res) {
+      callback(res);
+    });
   }
 
 };
