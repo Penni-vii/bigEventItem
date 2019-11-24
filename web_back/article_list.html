@@ -23,18 +23,13 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-                            <option>所有分类</option>
-                            <option>未分类</option>
-                            <option>奇趣事</option>
-                            <option>会生活</option>
-                            <option>爱旅行</option>
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option>所有状态</option>
-                            <option value="drafted">草稿</option>
-                            <option value="published">已发布</option>
+                            <option value="草稿">草稿</option>
+                            <option value="已发布">已发布</option>
                         </select>
-                        <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
+                        <button type="button" id="btnSearch" class="btn btn-default btn-sm">筛选</button>
                     </form>
                 </div>
                 <div class="col-xs-6">
@@ -59,17 +54,6 @@
 
             <div class="row text-center">
                 <ul id="pagination" class="pagination pagination-sm">
-                    <!-- <li class="page-item first disabled"><a href="#" class="page-link">首页</a></li>
-                    <li class="page-item prev disabled"><a href="#" class="page-link">上一页</a></li>
-                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                    <li class="page-item"><a href="#" class="page-link">5</a></li>
-                    <li class="page-item"><a href="#" class="page-link">6</a></li>
-                    <li class="page-item"><a href="#" class="page-link">7</a></li>
-                    <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
-                    <li class="page-item last"><a href="#" class="page-link">尾页</a></li> -->
                 </ul>
             </div>
 
@@ -78,6 +62,7 @@
 
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/article.js"></script>
+    <script src="./js/utils/category.js"></script>
     <script src="./js/art-template.js"></script>
     <script src="./js/josecebe-twbs-pagination/josecebe-twbs-pagination-5103bc4/jquery.twbsPagination.min.js"></script>
     <script>
@@ -96,43 +81,93 @@
           <td class="text-center">{{item.state}}</td>
           <td class="text-center">
               <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
+              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
           </td>
       </tr>
       {{/each}}
     </script>
+    <script type="text/html" id="temp-fenlei">
+      <option value="">所有分类</option>
+      {{each data item}}
+      <option value="{{item.id}}">{{item.name}}</option>
+      {{/each}}
+    </script>
+    <!-- 页面一上来，先把文章分类渲染到页面上 -->
+    <script>
+      category.show(function (res) {
+        console.log(res);
+        var htmlStr = template('temp-fenlei', res);
+        $('#selCategory').html(htmlStr);
+      });
+    </script>
     <script>
       // 全局变量
       var curPage = '';    // 表示当前要展示第几页。
+      var curTotalPage = '';    // 表示当前查询结果的总页数
+      var type = "";
+      var state = "";
       
+      getAndShow();
 
       // 页面一上来，先向后端发送请求，把数据拿过来,然后使用模板引擎渲染到页面上。
-      article.show(function(res) {
-        console.log(res);
-        if (res.code === 200) {
-          var htmlStr = template('temp-table', res);
-          // console.log(htmlStr);
-          $('#tb').html(htmlStr);
+      function getAndShow () {
+        // 调用方法，拿到接口中的数据。
+        article.show(curPage,type,state,function(res) {
+          // console.log(res);
+          if (res.code === 200) {
+            // 用模板引擎实现数据的渲染
+            var htmlStr = template('temp-table', res);
+            // console.log(htmlStr);
+            $('#tb').html(htmlStr);
 
+            // 实现分页
+            // 如果前后两次查询结果得到的总页数不相同。
+            // 则需要destory()分页插件，再做初始化。
+            if (curTotalPage != res.totalPage) {
+              console.log("当前查询结果的总页数与全部查询结果的总页数不同");
+              console.log(curTotalPage, res.totalPage);
+              // 由于插件对总页数的变化不敏感，所以如果总页数不同，则要
+              // 先销毁，再创建
+              // 参考：http://josecebe.github.io/twbs-pagination/
+              $('#pagination').twbsPagination('destroy');   // 先把之前的分页框销毁
+              curTotalPage = res.totalPage;    // 把分页总数赋值给当前的分页总数。  ？？？ 看不懂
+            };
 
-          // 使用分页插件，把下面的分页栏做出来
-          $('#pagination').twbsPagination({
-            totalPages: res.totalPage,
-            visiblePages: 7,
-            first: "首页",
-            prev: "上一页",
-            next: "下一页",
-            last: "尾页",
-            onPageClick: function (event, page) {
-              console.log(event, page);
-              // 点击页码，更新全局变量
-              curPage: page;
+            // 使用分页插件，把下面的分页栏做出来
+            $('#pagination').twbsPagination({
+              totalPages: res.totalPage,
+              visiblePages: 7,
+              first: "首页",
+              prev: "上一页",
+              next: "下一页",
+              last: "尾页",
+              onPageClick: function (event, page) {
+                console.log(event, page);
+                // 点击页码，更新全局变量
+                curPage = page;
+                // 更新页面
+                getAndShow();
+              }
+            });
+          }
+        });
+      };
 
-
-            }
-          });
-        }
+      // 点击筛选按钮时候的功能
+      $('#btnSearch').click(function () {
+        // 获取到用户选择的当前筛选条件
+        type = $('#selCategory').val();
+        state = $('#selStatus').val();
+        console.log(type,state);
+        // 已筛选，分页框总是展示第一页。
+        curPage = 1;
+        // 展示页面
+        getAndShow();
       });
+    
+      
+    
+    
     </script>
 
 </body>
