@@ -25,7 +25,7 @@
                         <select id="selCategory" name="" class="form-control input-sm">
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
-                            <option>所有状态</option>
+                            <option value="">所有状态</option>
                             <option value="草稿">草稿</option>
                             <option value="已发布">已发布</option>
                         </select>
@@ -80,8 +80,8 @@
           <td class="text-center">{{item.date}}</td>
           <td class="text-center">{{item.state}}</td>
           <td class="text-center">
-              <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              <a href="article_edit.html?id={{item.id}}" class="btn btn-default btn-xs">编辑</a>
+              <a href="javascript:;" data-id="{{item.id}}" class="btn btn-danger btn-xs" id="xixidel">删除</a>
           </td>
       </tr>
       {{/each}}
@@ -89,7 +89,7 @@
     <script type="text/html" id="temp-fenlei">
       <option value="">所有分类</option>
       {{each data item}}
-      <option value="{{item.id}}">{{item.name}}</option>
+        <option value="{{item.id}}">{{item.name}}</option>
       {{/each}}
     </script>
     <!-- 页面一上来，先把文章分类渲染到页面上 -->
@@ -113,7 +113,7 @@
       function getAndShow () {
         // 调用方法，拿到接口中的数据。
         article.show(curPage,type,state,function(res) {
-          // console.log(res);
+          console.log(res);
           if (res.code === 200) {
             // 用模板引擎实现数据的渲染
             var htmlStr = template('temp-table', res);
@@ -165,9 +165,26 @@
         getAndShow();
       });
     
-      
+      // 删除按钮的功能，因为是动态添加的元素，所以要用事件委托的方式。
+      $('#tb').on('click', '#xixidel', function () {
+        // 先获取到当前点击的这个元素的id值
+        var id = $(this).attr('data-id');
+        // 发送请求，删除
+        article.del(id,function (res) {
+          console.log(res);
+          if (res.code === 200) {
+            // 删除成功后更新页面
+            getAndShow();
+          }
+        });
+      });
     
-    
+
+
+
+
+
+
     </script>
 
 </body>

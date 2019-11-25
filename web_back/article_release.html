@@ -11,10 +11,8 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <link type="text/css" rel="stylesheet" href="js/jedate/css/jedate.css">
-    <script src="js/jquery-1.12.4.min.js"></script>
-    <script src="js/jedate/js/jedate.js"></script>
-    <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
-    <script src="js/tinymce/js/tinymce_setup.js"></script>
+    <link rel="stylesheet" href="./js/bootstrap/css/bootstrap.min.css">
+    
 </head>
 
 <body>
@@ -23,23 +21,29 @@
             写文章
         </div>
         <div class="container-fluid common_con">
-            <form class="form-horizontal article_form">
+            <form class="form-horizontal article_form" id="myform">
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="文章标题">
+                        <input type="email" name="title" class="form-control" id="inputEmail3" placeholder="文章标题">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <input type="file" id="exampleInputFile">
+                        <input name="cover" type="file" id="exampleInputFile">
+                    </div>
+                    <div>
+                      <img id="lufei"
+                        style="height:200px"
+                        src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1574658118899&di=1422a1950e116bf92c24b856ab265281&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201607%2F19%2F20160719155609_kyJEe.jpeg"
+                        alt="">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control" id="xixi">
+                        <select name="type" class="form-control" id="xixi">
                             <!-- <option>1</option> -->
                         </select>
                     </div>
@@ -49,7 +53,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
+                            <input name="date" type="text" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -61,14 +65,14 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="rich_content" name="content" placeholder="文章内容">
+                        <textarea name="content" class="form-control" id="rich_content" name="content" placeholder="文章内容">
                             Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda fugiat illo nihil molestias ab. Laborum eius non atque, totam sapiente quae obcaecati assumenda ratione inventore pariatur maiores, qui libero delectus.
                             </textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">发布</button>
+                        <button type="button" class="btn btn-success" id="publish">发布</button>
                         <button type="submit" class="btn btn-default">存为草稿</button>
                     </div>
                 </div>
@@ -76,26 +80,67 @@
         </div>
     </div>
 
-    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="js/jedate/js/jedate.js"></script>
+    <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="js/tinymce/js/tinymce_setup.js"></script>
+
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/category.js"></script>
     <script src="./js/art-template.js"></script>
+    <script src="./js/utils/article.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/bootbox.min.js"></script>
     <script type="text/html" id="temp">
       {{each data item}}
-      <option>{{item.name}}</option>
+        <option value="{{item.id}}">{{item.name}}</option>
       {{/each}}
     </script>
     <script>
-      // 显示文章类别
+      // 页面一上来，先显示文章类别
       category.show(function (res) {
         if (res.code === 200) {
+          console.log(res);
           var htmlStr = template('temp', res);
           $('#xixi').html(htmlStr);
         }
       });
 
+      // 做图片预览
+      $('#exampleInputFile').change(function () {
+        // console.dir(this);
+        var f = this.files[0];
+        // console.log(f);
+        var linshi = URL.createObjectURL(f);
+        $('#lufei').prop('src',linshi);
+      });
 
+      // 发布文章按钮的功能
+      $('#publish').click(function () {
+        var fd = new FormData(document.getElementById('myform'));
+        console.log(fd);
+        console.log(fd.get("title"));
 
+        // 根据接口文档的要求，还要再添加一个属性state
+        fd.append('state', '已发布');
+
+        // 因为富文本编辑器中的内容获取不到，所以要调用富文本编辑器自己的API去设置一下
+        // fd.set(key,value); 会覆盖fd中的key
+        fd.set('content', tinyMCE.activeEditor.getContent());
+
+        // 发送请求，调用接口的方法
+        article.add(fd,function (res) {
+          console.log(res);
+          if (res.code === 201) {
+            bootbox.alert("发布成功哦！");
+          }else {
+            bootbox.alert(res.msg);
+          }
+        })
+      });
+      
+      // 编辑按钮的功能
+      
     </script>
 </body>
 
