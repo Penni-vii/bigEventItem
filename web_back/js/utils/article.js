@@ -22,4 +22,22 @@ var article = {
       }
     })
   },
+  edit: function (fd,callback) {
+    $.ajax({
+      url: APIURLS.article_edit,
+      type: 'post',
+      data: fd,
+      processData: false,  // 不要让jquery自动去处理formdata数据
+      contentType: false,   // 不要让jqeury自动去设置请求头
+      success: function (res) {
+        callback(res);
+      }
+    })
+  },
+  getDetail: function (id,callback) {
+    $.get(APIURLS.article_show,{id:id},
+      function (res) {
+      callback(res);
+    })
+  },
 }
