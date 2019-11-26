@@ -28,23 +28,12 @@
         <div class="menu">
             <div class="menu_collapse fl">
                 <a href="javascript:;" class="level_one"><i class="fa fa-list-ul"></i>全部分类</a>
-                <ul class="level_two">
-                    <li class="up"></li>
-                    <li><a href="#">最 新</a></li>
-                    <li><a href="#">科 技</a></li>
-                    <li><a href="#">股 市</a></li>
-                    <li><a href="#">商 品</a></li>
-                    <li><a href="#">外 汇</a></li>
-                    <li><a href="#">公 司</a></li>
+                <ul class="level_two" id="newContainer">
+
                 </ul>
             </div>
-            <ul class="left_menu fl">
-                <li><a href="#">最 新</a></li>
-                <li><a href="#">科 技</a></li>
-                <li><a href="#">股 市</a></li>
-                <li><a href="#">商 品</a></li>
-                <li><a href="#">外 汇</a></li>
-                <li><a href="#">公 司</a></li>
+            <ul class="left_menu fl" id="categoryContainer">
+
             </ul>
             <ul class="right_menu fr">
                 <li><a href="#">科技专题</a></li>
@@ -220,6 +209,44 @@
         <p>CopyRight © 2019 深圳大事件信息技术股份有限公司   All Rights Reserved</p>
         <p>电话：0755-****888    粤ICP备*******8号</p>
     </div>
+
+
+    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="./js/utils/config.js"></script>
+    <script src="./js/utils/category.js"></script>
+    <script src="./js/art-template.js"></script>
+
+    <script type="text/html" id="temp_category">
+      {{each data item}}
+        <li><a href="#">{{item.name}}</a></li>
+      {{/each}}
+    </script>
+    <script type="text/html" id="temp_xixi">
+      <!-- <li class="up"></li> -->
+      {{each data item index}}
+        {{if}}
+        {{else}}
+        {{/if}}
+      <li><a href="#">{{item.name}}</a></li>
+      {{/each}}
+    </script>
+
+    <script>
+      // 页面一上来，先获取到所有的文章分类并展示出来
+      category.show(function (res) {
+        // console.log(res);
+        // 用模板引擎渲染出最新的文章分类（上方导航栏的文章分类）
+        var htmlStr = template('temp_category', res);
+        // console.log(htmlStr);
+        $('#categoryContainer').html(htmlStr);
+
+        // 用模板引擎渲染出最新的文章分类（左侧下拉列表的文章分类）
+        var htmlStrr = template('temp_xixi', res);
+        $('#newContainer').html(htmlStrr);
+      });
+    
+    </script>
+
 
 </body>
 
