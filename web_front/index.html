@@ -44,27 +44,8 @@
 
     <div class="main_con clearfix">
         <div class="left_con">
-            <ul class="focus_list">
-                <li class="first">
-                    <a href="#"><img src="images/pic01.jpg" alt=""></a>
-                    <p>图片说明</p>
-                </li>
-                <li>
-                    <a href="#"><img src="images/pic02.jpg" alt=""></a>
-                    <p>图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明</p>
-                </li>
-                <li>
-                    <a href="#"><img src="images/pic03.jpg" alt=""></a>
-                    <p>图片说明</p>
-                </li>
-                <li>
-                    <a href="#"><img src="images/pic05.jpg" alt=""></a>
-                    <p>图片说明</p>
-                </li>
-                <li>
-                    <a href="#"><img src="images/pic06.jpg" alt=""></a>
-                    <p>图片说明</p>
-                </li>
+            <ul class="focus_list" id="focus_list">
+
             </ul>
 
             <div class="common_title">
@@ -214,6 +195,7 @@
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/category.js"></script>
+    <script src="./js/utils/article.js"></script>
     <script src="./js/art-template.js"></script>
 
     <script type="text/html" id="temp_category">
@@ -224,10 +206,26 @@
     <script type="text/html" id="temp_xixi">
       <!-- <li class="up"></li> -->
       {{each data item index}}
-        {{if}}
+        {{if index === 0}}
+          <li class="up"></li>
         {{else}}
+          <li><a href="#">{{item.name}}</a></li>
         {{/if}}
-      <li><a href="#">{{item.name}}</a></li>
+      {{/each}}
+    </script>
+    <script type="text/html" id="temp_fiveFocus">
+      {{each data item index}}
+        {{if index === 0}}
+          <li class="first">
+            <a href="article.html?id={{item.id}}" target="_blank"><img src="{{item.cover}}" alt=""></a>
+            <p>{{item.title}}</p>
+          </li>
+        {{else}}
+          <li>
+            <a href="article.html?id={{item.id}}" target="_blank"><img src="{{item.cover}}" alt=""></a>
+            <p>{{item.title}}</p>
+          </li>
+        {{/if}}
       {{/each}}
     </script>
 
@@ -243,6 +241,14 @@
         // 用模板引擎渲染出最新的文章分类（左侧下拉列表的文章分类）
         var htmlStrr = template('temp_xixi', res);
         $('#newContainer').html(htmlStrr);
+      });
+
+      // 页面一上来，也要获取到最新的5篇文章，并展示到焦点图区域
+      article.getFiveFocus(function (res) {
+        console.log(res);
+        var htmlStr = template('temp_fiveFocus', res);
+        console.log(htmlStr);
+        $('#focus_list').html(htmlStr);
       });
     
     </script>
