@@ -208,6 +208,7 @@
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/article.js"></script>
+    <script src="./js/utils/category.js"></script>
     <script>
       // 根据传过来的id拿到对应要显示哪张文章,先拿到传过来的id
       var id = location.search.substr(4);
@@ -220,11 +221,28 @@
         $('#article_title').text(res.data.title);
         $('#article_author').text(res.data.author);
         $('#article_date').text(res.data.date);
-        $('#article_type').text(res.data.type);
+        // $('#article_type').text(res.data.type);
         $('#article_content').html(res.data.content);
         // 这时bug来了，现在因为res.data.type的值返回的数据为number类型，
         // 所以展示到页面上的就是一个数值，要把这个数值转换成对应的文章类型文字版。
         var typeId = res.data.type;
+
+        // 在文章详情数据中，res.data.type保存是类型的编号
+        // 但是，要显示在页面上的却要是类型的名称。
+        // 思路： 
+        //  1. 先取出所有的类型数据
+        //  2. 在其中找出编号与res.data.type相同的那一项，再取出它的名称
+        category.show(function(result) {
+          console.log(result);
+          var rs = result.data.find(function (item,index,self) {
+            if (item.id === typeId) {
+              return true;
+            }
+          });
+          if (rs) {
+            $('#article_type').text(rs.name);
+          }
+        });
         
       });
       
