@@ -63,69 +63,40 @@
                 (98)&nbsp;&nbsp;&nbsp;评论: (0)</div>
             <div class="article_con" id="article_content">
 
-                <p>“上天入地”还不够？硅谷“钢铁侠”马斯克名下一家低调的公司最近又融了一大笔钱。</p>
-
-                <p>马斯克投资的一家小型且不为人熟知的脑机接口（brain-computer
-                    interface）公司Neuralink披露，该公司融到了3900万美元，虽然不及公司计划的融资额5100万美元，但也比上次的融资多了不少。</p>
-
-                <p>两年前该公司曾计划融资1亿美元，但只拿到了2700万美元的融资。</p>
-
-                <p>在Neuralink递交给美国证券交易委员会（SEC）的材料中，并没有披露融资是否来自传统的风险投资者或者来自该公司的员工。</p>
-
-                <p>2016年，Neuralink在美国加利福尼亚州以医学研究公司的名义成立，之后一直低调运行。</p>
-
             </div>
             <div class="article_links">
                 上一篇： <a href="#">世界第一台可以玩游戏的冰箱</a><br>
                 下一篇： <a href="#">世界第一个可以玩游戏的马桶、世界上第一个可以玩游戏的茶杯</a>
             </div>
 
-            <form action="" class="comment_form">
+            <form id="myform" action="" class="comment_form">
                 <div class="form_group">
                     <label>用户名：</label>
-                    <input type="text" placeholder="请输入用户名" class="comment_name">
+                    <input name="name" type="text" placeholder="请输入用户名" class="comment_name">
                 </div>
                 <div class="form_group">
                     <label>评论内容：</label>
-                    <textarea placeholder="请发表您的评论" class="comment_input"></textarea>
+                    <textarea name="content" placeholder="请发表您的评论" class="comment_input"></textarea>
                 </div>
-                <div class="form_group">
-                    <input type="submit" name="" value="评 论" class="comment_sub"></div>
+                
+                    <!-- <button id="commentBtn" class="comment_sub">评论</button> -->
             </form>
+            <div class="form_group">
+              <input type="button" id="commentBtn"  value="评 论" class="comment_sub">
+            </div>
 
             <div class="comment_count">
                 4条评论
             </div>
 
             <div class="comment_list_con">
-                <div class="comment_detail_list">
+                <!-- <div class="comment_detail_list">
                     <div class="person_pic fl">乔</div>
                     <div class="name_time fl"><b>虚竹</b><span>4小时前</span></div>
                     <div class="comment_text fl">
                         遏制茅台酒价格过快上涨，多渠道供给，就不一定要买，租茅台酒也可以的，租售同权。开发共有产权茅台酒，让老百姓喝得起茅台酒，饮者有其酒。
                     </div>
-                </div>
-                <div class="comment_detail_list">
-                    <div class="person_pic fl">段</div>
-                    <div class="name_time fl"><b>虚竹</b><span>4小时前</span></div>
-                    <div class="comment_text fl">
-                        遏制茅台酒价格过快上涨，多渠道供给，就不一定要买，租茅台酒也可以的，租售同权。开发共有产权茅台酒，让老百姓喝得起茅台酒，饮者有其酒。
-                    </div>
-                </div>
-                <div class="comment_detail_list">
-                    <div class="person_pic fl">虚</div>
-                    <div class="name_time fl"><b>虚竹</b><span>4小时前</span></div>
-                    <div class="comment_text fl">
-                        遏制茅台酒价格过快上涨，多渠道供给，就不一定要买，租茅台酒也可以的，租售同权。开发共有产权茅台酒，让老百姓喝得起茅台酒，饮者有其酒。
-                    </div>
-                </div>
-                <div class="comment_detail_list">
-                    <div class="person_pic fl">王</div>
-                    <div class="name_time fl"><b>虚竹</b><span>4小时前</span></div>
-                    <div class="comment_text fl">
-                        遏制茅台酒价格过快上涨，多渠道供给，就不一定要买，租茅台酒也可以的，租售同权。开发共有产权茅台酒，让老百姓喝得起茅台酒，饮者有其酒。
-                    </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="right_con setfl">
@@ -209,7 +180,33 @@
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/article.js"></script>
     <script src="./js/utils/category.js"></script>
+    <script src="./js/utils/comment.js"></script>
+    <script src="./js/art-template.js"></script>
+    <script src="./js/dayjs/dayjs.min.js"></script>
+    <script src="./js/dayjs/zh_cn.js"></script>
+    <script src="./js/dayjs/relative.min.js"></script>
+
+    <script type="text/html" id="temp_comment">
+      {{each data item}}
+        <div class="comment_detail_list">
+          <div class="person_pic fl">{{item.name.substr(0,1)}}</div>
+          <div class="name_time fl"><b>{{item.name}}</b><span>{{item.relativeDt}}</span></div>
+          <div class="comment_text fl">
+            {{item.content}}
+          </div>
+        </div>
+      {{/each}}
+    </script>
+
     <script>
+        // dayjs使用插件
+        // 因为你引入了 “relative.min.js”，
+        // 所以就有了 dayjs_plugin_relativeTime
+        dayjs.extend(dayjs_plugin_relativeTime)
+
+        // dayjs设置语言
+        dayjs.locale('zh-cn')
+
       // 根据传过来的id拿到对应要显示哪张文章,先拿到传过来的id
       var id = location.search.substr(4);
       console.log(id);
@@ -245,6 +242,48 @@
         });
         
       });
+
+
+      // 添加评论功能
+      // 先获取到用户输入的评论（用户名和评论内容）
+      $('#commentBtn').click(function () {
+        var name = $('.comment_name').val().trim();
+        var content = $('.comment_input').val().trim();
+        // 获取到用户输入的信息之后，记得进行简单的判空哦！！！
+        if (name === '' || content === '') {
+          alert('输入不能为空');
+          return;
+        }
+
+        // 发送请求
+        comment.add(name,content,id,function (res) {
+          if (res.code === 200) {
+            // 发送请求成功时，置空留言区域
+            $('.comment_name').val('');
+            $('.comment_input').val('');
+            // 再次加载显示留言
+            getAndShow();
+          }
+        });
+      });
+
+      // 展示评论
+      function getAndShow () {
+        comment.get(id, function (res) {
+          console.log(res);
+          res.data.reverse();
+          // 对于所有的评论数据，给每一条数据中额外添加一个相对时间的属性
+          // 然后，在模板引擎中使用这个属性
+          res.data.forEach(function(item,index,self) {
+            item.relativeDt =  dayjs(item.dt).toNow()
+          });
+          var htmlStr = template('temp_comment', res);
+            $('.comment_list_con').html(htmlStr);
+        });
+      };
+
+      getAndShow();
+      
       
     
     </script>
